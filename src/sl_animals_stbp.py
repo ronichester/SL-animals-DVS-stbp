@@ -16,7 +16,7 @@ import torch.optim as optim
 from tensorboardX import SummaryWriter
 from datetime import datetime
 #imports from other python files
-from model import SLANIMALSNet
+from model import SLANIMALSNet, SLANIMALSNet2
 from dataset import AnimalsDvsSliced
 from layers import get_args
 from stbp_tools import kfold_split, train_net
@@ -105,6 +105,7 @@ if __name__ == '__main__':
                                                   shuffle=False, **kwargs)
         #Defining the model
         model = SLANIMALSNet().to(device)
+        # model = SLANIMALSNet2().to(device)  #under development
         
         #Defining the optimizer
         optimizer = optim.Adam(model.parameters(), lr=lr)

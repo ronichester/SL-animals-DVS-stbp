@@ -121,7 +121,7 @@ class SLANIMALSNet2(nn.Module):    # SL-Animals-DVS CNN network
     paper. 
     """
     def __init__(self):
-        super(SLANIMALSNet, self).__init__()        #input  Nx 2x128x128
+        super(SLANIMALSNet2, self).__init__()        #input  Nx 2x128x128
         #define the network layers
         self.conv1 = nn.Conv2d(2, 20, 3, 1)         #output Nx20x126x126
         self.pool1 = nn.AvgPool2d(2)                #output Nx20x63x63
@@ -131,8 +131,8 @@ class SLANIMALSNet2(nn.Module):    # SL-Animals-DVS CNN network
         self.fc2 = nn.Linear(200, 19)               #output Nx19
         #initialize trainable weights (as in the STBP paper)
         with torch.no_grad():
-            self.conv1.weight = torch.nn.Parameter(stbp_init(self.conv1.weight))
-            self.conv2.weight = torch.nn.Parameter(stbp_init(self.conv2.weight))
+            # self.conv1.weight = torch.nn.Parameter(stbp_init(self.conv1.weight))
+            # self.conv2.weight = torch.nn.Parameter(stbp_init(self.conv2.weight))
             self.fc1.weight = torch.nn.Parameter(stbp_init(self.fc1.weight))
             self.fc2.weight = torch.nn.Parameter(stbp_init(self.fc2.weight))
         #transform into spiking layers (encapsulate non-spiking with tdLayer)
