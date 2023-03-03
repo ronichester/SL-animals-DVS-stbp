@@ -64,4 +64,4 @@ tensorboard --logdir=logs
 - Other basic STBP implementations that served as a base for this project: [thiswinex/STBP-simple](https://github-com.translate.goog/thiswinex/STBP-simple?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp) and [yjwu17/STBP-for-training-SpikingNN](https://github.com/yjwu17/STBP-for-training-SpikingNN#spatio-temporal-bp-for-spiking-neural-networks)
 
 ## Copyright
-Copyright 2023 Schechter Roni. This software is free to use, copy, modify and distribute for personal, academic, or research use. It is **not authorized for commercial use** without strict and written authorization by the author. License terms are described in Creative Commons License CC BY-NC.
+Copyright 2023 Schechter Roni. This software is free to use, copy, modify and distribute for personal, academic, or research use. It's terms are under General Publoic License GNU v3.0.
