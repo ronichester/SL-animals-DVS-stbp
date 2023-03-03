@@ -9,7 +9,7 @@ The SL-Animals-DVS dataset implementation code is in *dataset.py*, and it's basi
 
 The core of the STBP method implementation is in *layers.py*: the base code code is from [thiswinex/STBP-simple](https://github-com.translate.goog/thiswinex/STBP-simple?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp), to which I added a few fixes, changes and adaptations, inspired also by this other [STBP implementation](https://github-com.translate.goog/thiswinex/STBP-simple?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp).
 
-The Spiking Neural Network model is in *model.py* - **SLANIMALSNet()** - , and reproduces the architechture described in the SL-animals paper. The main simulation parameters are in the variable *args* located in the header of *layers.py*. Other custom parameters like 'batch size', 'data path', 'seed' and many others can be found in the beginning of *sl_animals_stbp.py* and changed according to your preferences.
+The Spiking Neural Network model is in *model.py* (SLANIMALSNet), and reproduces the architechture described in the SL-animals paper. The main simulation parameters are in the variable *args* located in the header of *layers.py*. Other custom parameters like 'batch size', 'data path', 'seed' and many others can be found in the beginning of *sl_animals_stbp.py* and changed according to your preferences.
 
 
 ## Use
