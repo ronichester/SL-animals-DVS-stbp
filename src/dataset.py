@@ -31,12 +31,8 @@ class MyNMNIST(Dataset):
             
         """
         super(MyNMNIST, self).__init__()
-        self.train = train          #if True use train set otherwise test set
         self.time_bins = sim_steps  #number of time bins (simulation steps)
-        self.dt = dt                #sampling time in ms
-        self.path = path            #data path
         self.OR_mode = binning_OR   #binning mode
-        self.win = sim_steps * dt   #simulation window in ms (length)
         
         frame_transform = transforms.Compose([
             #transform events resolution from us to ms
@@ -44,7 +40,7 @@ class MyNMNIST(Dataset):
             #remove offset from timestamps so that 1st event starts at t=0
             transforms.TimeAlignment(),
             #remove events outside the simulation window
-            transforms.CropTime(max=self.win),
+            transforms.CropTime(max = sim_steps * dt),
             #transform event into frames using time bins
             transforms.ToFrame(sensor_size = NMNIST.sensor_size,
                                time_window = dt)
@@ -94,10 +90,7 @@ class MyNMNIST(Dataset):
         if self.OR_mode:  #binning mode 'OR'
             input_spikes = torch.where((input_spikes > 0), 1.0, input_spikes)
         else:             #binning mode 'SUM'
-            input_spikes = torch.where(
-                (input_spikes > 0),  #if there is a spike in this pixel:
-                input_spikes/input_spikes.max(),  #change value to this
-                input_spikes)                     #else keep value at 0
+            pass #do nothing, TonicFrames works natively in 'SUM' mode
 
         return (input_spikes, target)
 
@@ -113,7 +106,6 @@ class AnimalsDvsSliced(Dataset):
     def __init__(self, dataPath, fileList, samplingTime, sampleLength,
                  fixedLength, binMode):
         
-        self.path = dataPath                               #string
         self.slicedDataPath = dataPath + 'sliced_recordings/'   #string
         self.files = list_sliced_files(fileList)           #list [1121 files]
         self.samplingTime = samplingTime                   #30 [ms]
@@ -123,7 +115,7 @@ class AnimalsDvsSliced(Dataset):
         self.binMode = binMode                             #string
         #read class file
         self.classes = pd.read_csv(                        #DataFrame
-            self.path + 'SL-Animals-DVS_gestures_definitions.csv')
+            dataPath + 'SL-Animals-DVS_gestures_definitions.csv')
     
     def __len__(self):
         return len(self.files)
@@ -202,7 +194,7 @@ class AnimalsDvsSliced(Dataset):
                 1.0,                                #set pixel value
                 input_spikes)                       #else keep value 0
         elif self.binMode == 'SUM' :
-            pass  #do nothing, TonicFrames work natively in 'SUM' mode
+            pass  #do nothing, TonicFrames works natively in 'SUM' mode
         else:
             print("Invalid binning mode; results are compromised!")
             print("(binning_mode should be only 'OR' or 'SUM')")

@@ -4,6 +4,9 @@ Created on Tue Feb  7 11:47:50 2023
 
 Training the SL-Animals-DVS dataset with STBP: Spatio-temporal Back Propagation
 
+Assumes the original dataset is already sliced in 1121 samples.
+(Make sure to run "slice_data.py" before training)
+
 @author: Schechter
 """
 import os
@@ -33,7 +36,7 @@ momentum = 0.9                    #SGD momentum (default: 0.5)
 cuda = True                       #enables CUDA training (default: True)
 seed = 1                          #random seed
 load_model = False                #For Loading pre-trained weights on Model
-data_path = '../data/'            #'/home/data/'
+data_path = '../data/'            #'/home/data/'   (YOUR DATA PATH HERE)  
 model_path = './weights/'         #to save the the model weights
 logs_path = './logs/'             #to save the tensorboard logs
 binning_mode = 'OR'               #binning mode (OR, SUM)
@@ -44,6 +47,7 @@ use_cuda = cuda and torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 kwargs = {'num_workers': 4, 'pin_memory': True} if use_cuda else {}  #=1
 val_losses, val_accuracies = [], []       #initializing val history
+# test_losses, test_accuracies = [], []       #initializing test history
 
 #creating a generator to split the data into 4 folds of train/test files
 train_test_generator = kfold_split(data_path + 'filelist.txt', seed)
@@ -53,12 +57,12 @@ train_test_generator = kfold_split(data_path + 'filelist.txt', seed)
 if __name__ == '__main__':
     
     #print header
-    print('Starting 4-fold cross validation:')
-    print("batch size={}, epochs={}, initial LR={}, binning mode={}"
+    print('WELCOME TO STBP TRAINING!')
+    print("Training params: batch size={}, epochs={}, initial LR={}, binning mode={}"
           .format(batch_size, epochs, lr, binning_mode))
-    print("steps={}, dt={}, Vth={}, Tau={}, a1={}".format(
+    print("Simulation params: steps={}, dt={}, Vth={}, Tau={}, a1={}".format(
           steps, dt, get_args()['Vth'], get_args()['tau'], get_args()['an']))
-    print('Please wait...\n')
+    print('\nStarting 4-fold cross validation: Please wait...\n')
     global_st_time = datetime.now()       #monitor total training time 
     
     #CROSS-VALIDATION: iterate for each fold
@@ -106,7 +110,7 @@ if __name__ == '__main__':
         optimizer = optim.Adam(model.parameters(), lr=lr)
         
         #Training and testing along the epochs
-        print("Starting STBP Training and Evaluation... fold {}:".format(fold))
+        print("FOLD {}:".format(fold))
         print("-----------------------------------------------")
         min_loss, max_acc = train_net(
             model, optimizer, device, train_loader, test_loader, epochs, 

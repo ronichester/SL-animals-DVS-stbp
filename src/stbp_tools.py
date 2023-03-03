@@ -236,4 +236,3 @@ def stbp_init(weight_matrix):
     torch.nn.init.uniform_(weight_matrix, -1.0, 1.0)
     denominator = (weight_matrix**2).sum(dim=1).sqrt().unsqueeze(1)
     return weight_matrix / denominator
-    
