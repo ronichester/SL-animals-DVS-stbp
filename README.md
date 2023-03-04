@@ -3,8 +3,12 @@ This repository contains an STBP (Spatio-Temporal Back Propagation) implementati
 
 **A BRIEF INTRODUCTION:**  
 STBP is an offline training method that directly trains a SNN, expanding the use of the classic backpropagation algorithm to the time domain, so the training occurs in space AND time. Therefore, it is a suitable method to train SNNs, which are biologically plausible networks (in short).  
-The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by different people representing animals, and recorded with a Dynamic Vision Sensor (DVS).
+The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by different people representing animals, and recorded with a Dynamic Vision Sensor (DVS).  
 
+<p align="center">
+<img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1007%2Fs10044-021-01011-w/MediaObjects/10044_2021_1011_Fig4_HTML.png" width="300px></p>
+
+<p align="center"> </p>
 The reported results in the SL-animals paper were a test accuracy of 56.2% +- 1.52% in the whole dataset and 71.45% +- 1.74% on the reduced dataset (excluding group S3). The results achieved with the implementation published here: **Test Accuracy (whole dataset): 41.32% +- 3.06%**
 
 ## Pre-requisites
