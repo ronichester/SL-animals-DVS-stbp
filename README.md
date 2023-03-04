@@ -1,6 +1,12 @@
 # SL-animals-DVS training with STBP
 This repository contains an STBP (Spatio-Temporal Back Propagation) implementation on the SL-Animals-DVS dataset using Pytorch.
 
+**A BRIEF INTRODUCTION:**  
+STBP is an offline training method that directly trains a SNN, expanding the use of the classic backpropagation algorithm to the time domain, so the training occurs in space AND time. Therefore, it is a suitable method to train SNNs, which are biologically plausible networks (in short).  
+The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by different people representing animals, and recorded with a Dynamic Vision Sensor (DVS).
+
+The reported results in the SL-animals paper were a test accuracy of 56.2% +- 1.52% in the whole dataset and 71.45% +- 1.74% on the reduced dataset (excluding group S3). The results achieved with the implementation published here: **Test Accuracy (whole dataset): 41.32% +- 3.06%**
+
 ## Pre-requisites
 While not sure if the list below contain the actual minimums, it will run for sure if you do have the following:
 - Python 3.0+
@@ -10,10 +16,6 @@ While not sure if the list below contain the actual minimums, it will run for su
 
 ## README FIRST
 This package contains the necessary python files to train a Spiking Neural Network with the STBP method on the Sign Language Animals DVS dataset. 
-
-**A BRIEF INTRODUCTION:**  
-STBP is an offline training method that directly trains a SNN, expanding the use of the classic backpropagation algorithm to the time domain, so the training occurs in space AND time. Therefore, it is a suitable method to train SNNs, which are biologically plausible networks (in short).  
-The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by different people representing animals, and recorded with a Dynamic Vision Sensor (DVS).
 
 **IMPLEMENTATION**  
 Package Contents:  
@@ -30,7 +32,7 @@ The core of the STBP method implementation is in *layers.py*: the base code code
 
 The Spiking Neural Network model is in *model.py* (SLANIMALSNet), and reproduces the architecture described in the SL-animals paper. The main program is in *sl_animals_stbp.py*, which contains right at the top main parameters that can be customized like 'batch size', 'data path', 'seed' and many others.  The main training tools and functions used in the package are in *stbp_tools.py*. 
 
-Finally, *slice_data.py* is a script to slice the SL animals DVS recordings into actual samples for training, and save the slices to disk. The reason for that is because the original raw dataset after download contains only 59 files (DVS recordings), and not 1121 samples. Each recording contains 1 individual performing the 19 gestures in sequence, so there is a need to manually cut these 19 slices from each whole recording in order to actually use the dataset. 
+Finally, *slice_data.py* is a script to slice the SL animals DVS recordings into actual samples for training, and save the slices to disk. The reason for this is because the original raw dataset after download contains only 59 files (DVS recordings), and not 1121 samples. Each recording contains 1 individual performing the 19 gestures in sequence, so there is a need to manually cut these 19 slices from each whole recording in order to actually use the dataset. 
 
 
 ## Use
