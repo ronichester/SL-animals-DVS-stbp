@@ -8,9 +8,10 @@ The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by diffe
 <p align="center">
 <img src="https://media.springernature.com/lw685/springer-static/image/art%3A10.1007%2Fs10044-021-01011-w/MediaObjects/10044_2021_1011_Fig4_HTML.png" width="300px></p>
 
-<p align="center"> </p>
-The reported results in the SL-animals paper were a test accuracy of 56.2% +- 1.52% in the whole dataset and 71.45% +- 1.74% on the reduced dataset (excluding group S3). The results achieved with the implementation published here: **Test Accuracy (whole dataset): 41.32% +- 3.06%**
+<p align="center"> </p>  
 
+The reported results in the SL-animals paper were a test accuracy of 56.2% +- 1.52% in the whole dataset and 71.45% +- 1.74% on the reduced dataset (excluding group S3). The results achieved with the implementation published here: **Test Accuracy (whole dataset): 41.32% +- 3.06%**.  
+           
 ## Pre-requisites
 While not sure if the list below contain the actual minimums, it will run for sure if you do have the following:
 - Python 3.0+
