@@ -46,7 +46,7 @@ Finally, *slice_data.py* is a script to slice the SL animals DVS recordings into
 git clone https://github.com/ronichester/SL-animals-DVS-stbp
 ```
 2. Download the dataset in [this link](http://www2.imse-cnm.csic.es/neuromorphs/index.php/SL-ANIMALS-DVS-Database);
-3. Save the DVS recordings in the *recordings* folder and the file tags in the *tags* folder;
+3. Save the DVS recordings in the *data/recordings* folder and the file tags in the *data/tags* folder;
 4. Run *slice_data.py* to slice the 59 raw recordings into 1121 samples.
 ```
 python slice_data.py
