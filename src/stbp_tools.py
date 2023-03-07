@@ -141,7 +141,7 @@ def adjust_learning_rate(optimizer, epoch, lr_decay_epoch=25):
 
 
 #main training/evaluating function
-def train_net(model, optimizer, device, train_loader, test_loader, epochs, 
+def train_net(model, optimizer, device, train_loader, val_loader, epochs, 
               steps, writer, fold, save_path, pretrained, decay_lr=False):
     
     #load pre-trained weights
@@ -182,7 +182,7 @@ def train_net(model, optimizer, device, train_loader, test_loader, epochs,
         val_loss = 0
         correct = 0
         with torch.no_grad():
-            for data, target in test_loader:
+            for data, target in val_loader:
                 data, target = data.to(device), target.to(device)
                 output = model(data)
                 val_loss += F.mse_loss(output, target, reduction='sum').item()  # sum up batch loss
@@ -192,27 +192,27 @@ def train_net(model, optimizer, device, train_loader, test_loader, epochs,
                 target_label = target.argmax(dim=1, keepdim=True)
                 correct += pred.eq(target_label.view_as(pred)).sum().item()
         #avg test loss / accuracy
-        val_loss /= len(test_loader.dataset)
-        test_acc = 100. * correct / len(test_loader.dataset)
+        val_loss /= len(val_loader.dataset)
+        val_acc = 100. * correct / len(val_loader.dataset)
         
         #printing and logging testing statistics (per epoch)
-        print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'
-              .format(val_loss, correct, len(test_loader.dataset), test_acc))
-        writer.add_scalar('Test Loss /epoch', val_loss, epoch)
-        writer.add_scalar('Test Acc /epoch', test_acc, epoch)
+        print('\nValidation set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'
+              .format(val_loss, correct, len(val_loader.dataset), val_acc))
+        writer.add_scalar('Validation Loss /epoch', val_loss, epoch)
+        writer.add_scalar('Validation Acc /epoch', val_acc, epoch)
         for i, (name, param) in enumerate(model.named_parameters()):
             if '_s' in name:
                 writer.add_histogram(name, param, epoch)
         
         #updating max accuracy
-        if test_acc > max_acc:
-            max_acc = test_acc
-        print('(Max. Test Accuracy: {:.2f}%)\n'.format(max_acc))
-        
+        if val_acc > max_acc:
+            max_acc = val_acc
+        print('(Min. Val. Loss: {:.2f}%  |  Max. Val. Accuracy: {:.2f}%)\n'.format(min_loss, max_acc))
+
         #saving best weights for inference (at minimum loss)
         if val_loss < min_loss:
             min_loss = val_loss
-            print('Lower minimum loss found: {:.6f}'.format(min_loss))
+            print('\nLower minimum loss found!')
             print("Saving the model's best weights...\n")
             os.makedirs(save_path, exist_ok=True)
             torch.save(model.state_dict(), 
@@ -224,9 +224,51 @@ def train_net(model, optimizer, device, train_loader, test_loader, epochs,
         if decay_lr:
             optimizer = adjust_learning_rate(optimizer, epoch)
         #end of epoch
-        
-    return min_loss, max_acc
     
+    #if model did not train for some reason, save the weights anyway for inference
+    if min_loss == 1.0: 
+        print("Unfortunately the model was not able to train on this fold with these settings.")
+        print("Saving the model's weights...\n")
+        os.makedirs(save_path, exist_ok=True)
+        torch.save(model.state_dict(), 
+                   save_path + "model_weights_fold{}.pt".format(fold))
+
+    return min_loss, max_acc
+
+def test_net(model, device, test_loader, writer, fold, save_path):
+    
+    #load best model weights for inference
+    checkpoint_path = save_path + 'model_weights_fold{}.pt'.format(fold)
+    if os.path.isfile(checkpoint_path):
+        print("Loading pre-trained model...")
+        model.load_state_dict(torch.load(checkpoint_path))
+        print('Model loaded.')
+    
+    #testing loop
+    model.eval()
+    test_loss = 0
+    correct = 0
+    with torch.no_grad():
+        for data, target in test_loader:
+            data, target = data.to(device), target.to(device)
+            output = model(data)
+            test_loss += F.mse_loss(output, target, reduction='sum').item()  # sum up batch loss
+            pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
+            target_label = target.argmax(dim=1, keepdim=True)
+            correct += pred.eq(target_label.view_as(pred)).sum().item()
+    #avg test loss / accuracy
+    test_loss /= len(test_loader.dataset)
+    test_acc = 100. * correct / len(test_loader.dataset)
+    
+    #printing and logging testing statistics
+    print('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)'
+            .format(test_loss, correct, len(test_loader.dataset), test_acc))
+    writer.add_scalar('Test Loss', test_loss)
+    writer.add_scalar('Test Accuracy', test_acc)
+
+    return test_loss, test_acc
+
+
 def stbp_init(weight_matrix):
     """
     Initializes a weight matrix with the method described in the STBP paper.
