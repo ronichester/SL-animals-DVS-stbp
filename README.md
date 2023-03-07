@@ -10,7 +10,7 @@ The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by diffe
 
 <p align="center"> </p>  
 
-The reported results in the SL-animals paper were a test accuracy of 56.2% +- 1.52% in the whole dataset and 71.45% +- 1.74% on the reduced dataset (excluding group S3). The results achieved with the implementation published here: **Test Accuracy (whole dataset): 41.32% +- 3.06%**.  
+The reported results in the SL-animals paper were a test accuracy of 56.2% +- 1.52% in the whole dataset and 71.45% +- 1.74% on the reduced dataset (excluding group S3). The results achieved with the implementation published here: (using train/test sets only) **Test Accuracy (whole dataset): 41.32% +- 3.06%**.  
            
 ## Requirements:
 While not sure if the list below contain the actual minimums, it will run for sure if you do have the following:
@@ -30,15 +30,17 @@ Package Contents:
 - sl_animals_stbp.py
 - slice_data.py
 - stbp_tools.py
+- train_test_only.py
 
 The SL-Animals-DVS dataset implementation code is in *dataset.py*, and it's basically a Pytorch Dataset object. The library [*Tonic*](https://tonic.readthedocs.io/en/latest/index.html#) was used to read and process the DVS recordings.
 
+A script was created to slice the SL animals DVS recordings into actual samples for training, and save the slices to disk - *slice_data.py*. The reason for this is because the original raw dataset after download contains only 59 files (DVS recordings), and not 1121 samples. Each recording contains 1 individual performing the 19 gestures in sequence, so there is a need to manually cut these 19 slices from each whole recording in order to actually use the dataset. 
+
 The core of the STBP method implementation is in *layers.py*: the base code code is from [thiswinex/STBP-simple](https://github-com.translate.goog/thiswinex/STBP-simple?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp), to which I added a few fixes, changes and adaptations, inspired also by this other [STBP implementation](https://github.com/yjwu17/STBP-for-training-SpikingNN#spatio-temporal-bp-for-spiking-neural-networks). The main simulation parameters are in the variable *args* located in the header of *layers.py*.
 
-The Spiking Neural Network model is in *model.py* (SLANIMALSNet), and reproduces the architecture described in the SL-animals paper. The main program is in *sl_animals_stbp.py*, which contains right at the top main parameters that can be customized like 'batch size', 'data path', 'seed' and many others.  The main training tools and functions used in the package are in *stbp_tools.py*. 
+The Spiking Neural Network model is in *model.py* (SLANIMALSNet), and reproduces the architecture described in the SL-animals paper. The main training tools and functions used in the package are in *stbp_tools.py*. 
 
-Finally, *slice_data.py* is a script to slice the SL animals DVS recordings into actual samples for training, and save the slices to disk. The reason for this is because the original raw dataset after download contains only 59 files (DVS recordings), and not 1121 samples. Each recording contains 1 individual performing the 19 gestures in sequence, so there is a need to manually cut these 19 slices from each whole recording in order to actually use the dataset. 
-
+The main program is in *sl_animals_slayer.py*, which contains right at the top main parameters that can be customized like 'batch size', 'data path', 'seed' and many others. This program uses the correct experimental procedure for training a network using cross validation after dividing the dataset into train, validation and test sets. A simpler version of the main program is in *train_test_only.py*, which is basically the same except dividing the dataset only into train and test sets, in an effort to replicate the published results. Apparently, the benchmark results were reported in this simpler dataset split configuration, which is not optimal.
 
 ## Use
 1. Clone this repository:
@@ -52,9 +54,13 @@ git clone https://github.com/ronichester/SL-animals-DVS-stbp
 python slice_data.py
 ```
 5. Edit the custom parameters according to your preferences. The default parameters setting is functional and was tailored according to the information provided in the relevant papers, the reference codes used as a basis, and mostly by trial and error (lots of it!). You are encouraged to edit the main parameters in *sl_animals_stbp.py* and the arguments in the header of *layers.py*, and please **let me know if you got better results**.
-6. Run *sl_animals_stbp.py* to start the SNN training:
+6. Run *sl_animals_stbp.py* (or *train_test_only.py*) to start the SNN training:
 ```
 python sl_animals_stbp.py
+```
+or
+```
+python train_test_only.py
 ```
 7. The Tensorboard logs will be saved in *src/logs* and the network weights will be saved in *src/weights*. To visualize the logs with tensorboard:
   - open a terminal (I use Anaconda Prompt), go to the *src* directory and type:
