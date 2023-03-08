@@ -208,7 +208,7 @@ def train_net(model, optimizer, device, train_loader, val_loader, epochs,
         #updating max accuracy
         if val_acc > max_acc:
             max_acc = val_acc
-        print('(Min. Val. Loss: {:.2f}%  |  Max. Val. Accuracy: {:.2f}%)\n'.format(min_loss, max_acc))
+        print('(Min. Val. Loss: {:.4f}  |  Max. Val. Accuracy: {:.2f}%)\n'.format(min_loss, max_acc))
 
         #saving best weights for inference (at minimum loss)
         if val_loss < min_loss:
