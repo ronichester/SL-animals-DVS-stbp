@@ -107,14 +107,14 @@ class AnimalsDvsSliced(Dataset):
                  fixedLength, binMode):
         
         self.slicedDataPath = dataPath + 'sliced_recordings/'   #string
-        self.files = list_sliced_files(fileList)           #list [1121 files]
-        self.samplingTime = samplingTime                   #30 [ms]
-        self.sampleLength = sampleLength                   #1500 [ms]
-        self.nTimeBins = int(sampleLength / samplingTime)  #50 bins 
-        self.fixedLength = fixedLength                     #boolean
-        self.binMode = binMode                             #string
+        self.files = list_sliced_files(fileList)            #list [1121 files]
+        self.samplingTime = samplingTime                    #30 [ms]
+        self.sampleLength = sampleLength                    #1500 [ms]
+        self.nTimeBins = int(sampleLength / samplingTime)   #50 bins 
+        self.fixedLength = fixedLength                      #boolean
+        self.binMode = binMode                              #string
         #read class file
-        self.classes = pd.read_csv(                        #DataFrame
+        self.classes = pd.read_csv(                         #DataFrame
             dataPath + 'SL-Animals-DVS_gestures_definitions.csv')
     
     def __len__(self):
@@ -130,7 +130,7 @@ class AnimalsDvsSliced(Dataset):
         events = np.load(self.slicedDataPath + input_name)
         
         #find sample class
-        class_index = index % 19                           #[0-18]
+        class_index = index % 19                            #[0-18]
         # class_name =  self.classes.iloc[class_index, 1]
         
         #prepare the target vector (one hot encoding)
@@ -144,21 +144,21 @@ class AnimalsDvsSliced(Dataset):
         #if using fixed sampleLength/time_bins, crop relevant events
         if self.fixedLength:
             frame_transform = transforms.Compose([
-                transforms.Downsample(time_factor=0.001),    #us to ms
-                transforms.TimeAlignment(),         #1st event at t=0
-                transforms.CropTime(max=self.sampleLength),  #crop events
-                transforms.ToFrame(                 #events -> frames
+                transforms.Downsample(time_factor=0.001),   #us to ms
+                transforms.TimeAlignment(),                 #1st event at t=0
+                transforms.CropTime(max=self.sampleLength), #crop events
+                transforms.ToFrame(                         #events -> frames
                     sensor_size = (128, 128, 2),
-                    time_window=self.samplingTime,  #in ms
+                    time_window=self.samplingTime,          #in ms
                     )
                 ])
         else:  #variable length
             frame_transform = transforms.Compose([
-                transforms.Downsample(time_factor=0.001),  #us to ms
-                transforms.TimeAlignment(),                #1st event at t=0
-                transforms.ToFrame(                        #events -> frames
+                transforms.Downsample(time_factor=0.001),   #us to ms
+                transforms.TimeAlignment(),                 #1st event at t=0
+                transforms.ToFrame(                         #events -> frames
                     sensor_size = (128, 128, 2),
-                    time_window=self.samplingTime,  #in ms
+                    time_window=self.samplingTime,          #in ms
                     )
                 ])
         
@@ -190,9 +190,9 @@ class AnimalsDvsSliced(Dataset):
         if self.binMode == 'OR' :
             #set all pixels with spikes to the value '1.0'
             input_spikes = torch.where(
-                (input_spikes > 0),   #if spike:
-                1.0,                                #set pixel value
-                input_spikes)                       #else keep value 0
+                (input_spikes > 0),                         #if spike:
+                1.0,                                        #set pixel value
+                input_spikes)                               #else keep value 0
         elif self.binMode == 'SUM' :
             pass  #do nothing, TonicFrames works natively in 'SUM' mode
         else:

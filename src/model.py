@@ -24,7 +24,7 @@ class NMNISTNetMLP(nn.Module):  # N-MNIST MLP network on STBP paper
         x = self.spike(x)
         x = self.fc3_s(x)
         x = self.spike(x)
-        out = torch.sum(x, dim=2) / steps       # [N, neurons, steps]
+        out = torch.sum(x, dim=2) / steps                #[N, neurons, steps]
         return out    
 
 class NMNISTNetMLP2(nn.Module):  # N-MNIST MLP network on STBP paper
@@ -42,7 +42,7 @@ class NMNISTNetMLP2(nn.Module):  # N-MNIST MLP network on STBP paper
         x = self.spike(x)
         x = self.fc2_s(x)
         x = self.spike(x)
-        out = torch.sum(x, dim=2) / steps       # [N, neurons, steps]
+        out = torch.sum(x, dim=2) / steps                #[N, neurons, steps]
         return out    
 
 
@@ -71,7 +71,7 @@ class NMNISTNet(nn.Module):    # N-MNIST CNN network
         x = self.spike(x)
         x = self.fc2_s(x)
         x = self.spike(x)
-        out = torch.sum(x, dim=2) / steps           # [N, neurons, steps]
+        out = torch.sum(x, dim=2) / steps                 #[N, neurons, steps]
         return out
 
 
@@ -110,7 +110,7 @@ class SLANIMALSNet(nn.Module):    # SL-Animals-DVS CNN network
         x = self.spike(x)
         x = self.fc2_s(x)
         x = self.spike(x)
-        out = torch.sum(x, dim=2) / steps           # [N, neurons, steps]
+        out = torch.sum(x, dim=2) / steps           #[N, neurons, steps]
         return out
 
 
@@ -121,7 +121,7 @@ class SLANIMALSNet2(nn.Module):    # SL-Animals-DVS CNN network
     paper. 
     """
     def __init__(self):
-        super(SLANIMALSNet2, self).__init__()        #input  Nx 2x128x128
+        super(SLANIMALSNet2, self).__init__()       #input  Nx 2x128x128
         #define the network layers
         self.conv1 = nn.Conv2d(2, 20, 3, 1)         #output Nx20x126x126
         self.pool1 = nn.AvgPool2d(2)                #output Nx20x63x63
@@ -157,6 +157,6 @@ class SLANIMALSNet2(nn.Module):    # SL-Animals-DVS CNN network
         x = self.spike(x)
         x = self.fc2_s(x)
         x = self.spike(x)
-        out = torch.sum(x, dim=2) / steps           # [N, neurons, steps]
+        out = torch.sum(x, dim=2) / steps           #[N, neurons, steps]
         return out
 

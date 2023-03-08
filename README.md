@@ -2,7 +2,7 @@
 This repository contains an STBP (Spatio-Temporal Back Propagation) implementation on the SL-Animals-DVS dataset using Pytorch.
 
 **A BRIEF INTRODUCTION:**  
-STBP is an offline training method that directly trains a SNN, expanding the use of the classic backpropagation algorithm to the time domain, so the training occurs in space AND time. Therefore, it is a suitable method to train SNNs, which are biologically plausible networks (in short).  
+STBP is an offline training method that directly trains a Spiking Neural Network (SNN), expanding the use of the classic backpropagation algorithm to the time domain, so the training occurs in space AND time. Therefore, it is a suitable method to train SNNs, which are biologically plausible networks (in short).  
 The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by different people representing animals, and recorded with a Dynamic Vision Sensor (DVS).  
 
 <p align="center">
@@ -10,10 +10,10 @@ The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by diffe
 
 <p align="center"> </p>  
 
-The reported results in the SL-animals paper were a test accuracy of 56.2% +- 1.52% in the whole dataset and 71.45% +- 1.74% on the reduced dataset (excluding group S3). The results achieved with the implementation published here: (using train/test sets only) **Test Accuracy (whole dataset): 41.32% +- 3.06%**.  
+The reported results in the SL-animals paper were a test accuracy of 56.2% +- 1.52% in the whole dataset and 71.45% +- 1.74% on the reduced dataset (excluding group S3). The results achieved with the implementation published here, using train/test sets only: **Test Accuracy (whole dataset): 41.32% +- 3.06%**.  
            
 ## Requirements:
-While not sure if the list below contain the actual minimums, it will run for sure if you do have the following:
+While not sure if the list below contains the actual minimums, it will run for sure if you do have the following:
 - Python 3.0+
 - Pytorch 1.11+
 - CUDA 11.3+
