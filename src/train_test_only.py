@@ -18,38 +18,25 @@ from datetime import datetime
 #imports from other python files
 from model import SLANIMALSNet, SLANIMALSNet2
 from dataset import AnimalsDvsSliced
-from layers import get_args
-from stbp_tools import kfold_split, train_net
+from stbp_tools import kfold_split, train_net, Params
 
 #assert we are on the right working directory (good for running on containers)
 PATH = os.path.dirname(os.path.realpath(__file__))
 os.chdir(PATH)
 
-#main parameters
-steps = get_args()['steps']       #50 frames/time bins
-dt = get_args()['dt']             #30ms per frame
-batch_size = 8                    #input batch size for training
-test_batch_size = 32              #input batch size for testing
-epochs = 200                      #number of epochs to train
-lr = 1e-3                         #learning rate (default: 1e-3 Adam | 0.5 SGD)
-momentum = 0.9                    #SGD momentum (default: 0.5)
-cuda = True                       #enables CUDA training (default: True)
-seed = 1                          #random seed
-load_model = False                #For Loading pre-trained weights on Model
-data_path = '../data/'            #'/home/data/'   (YOUR DATA PATH HERE)  
-model_path = './weights/'         #to save the the model weights
-logs_path = './logs/'             #to save the tensorboard logs
-binning_mode = 'OR'               #binning mode (OR, SUM)
+#load main parameters
+net_params = Params('network.yaml')
 
 #Setting the seed, use of GPU and initializing common arguments
-torch.manual_seed(seed)
-use_cuda = cuda and torch.cuda.is_available()
+torch.manual_seed(net_params.get_param('Training.seed'))
+use_cuda = net_params.get_param('Training.cuda') and torch.cuda.is_available()
 device = torch.device("cuda:0" if use_cuda else "cpu")
 kwargs = {'num_workers': 4, 'pin_memory': True} if use_cuda else {}  #=1
 test_losses, test_accuracies = [], []       #initializing test history
 
 #creating a generator to split the data into 4 folds of train/test files
-train_test_generator = kfold_split(data_path + 'filelist.txt', seed)
+train_test_generator = kfold_split(net_params.get_param('Path.file_list'),
+                                   net_params.get_param('Training.seed'))
 
 #----------------------------- MAIN PROGRAM ------------------------------
 #main program
@@ -58,9 +45,16 @@ if __name__ == '__main__':
     #print header
     print('WELCOME TO STBP TRAINING!')
     print("Training params: batch size={}, epochs={}, initial LR={}, binning mode={}"
-          .format(batch_size, epochs, lr, binning_mode))
+          .format(net_params.get_param('Training.batch'), 
+                  net_params.get_param('Training.epochs'), 
+                  net_params.get_param('Training.lr'), 
+                  net_params.get_param('Training.bin_mode')))
     print("Simulation params: steps={}, dt={}, Vth={}, Tau={}, a1={}".format(
-          steps, dt, get_args()['Vth'], get_args()['tau'], get_args()['an']))
+          net_params.get_param('Simulation.steps'),
+          net_params.get_param('Simulation.dt'), 
+          net_params.get_param('Simulation.Vth'), 
+          net_params.get_param('Simulation.tau'), 
+          net_params.get_param('Simulation.a1')))
     print('\nStarting 4-fold cross validation (train/test only): Please wait...\n')
     global_st_time = datetime.now()       #monitor total training time 
     
@@ -68,24 +62,27 @@ if __name__ == '__main__':
     for fold, (train_set, test_set) in enumerate(train_test_generator, start=1):
         
         #logging statistics with tensorboard
-        writer = SummaryWriter(logs_path + 'fold{}'.format(fold))
+        writer = SummaryWriter(
+            net_params.get_param('Path.logs') + 'fold{}'.format(fold))
         
         #definining train and test Datasets
         training_set = AnimalsDvsSliced(
-            dataPath     = data_path,
+            dataPath     = net_params.get_param('Path.data'),
             fileList     = train_set,
-            samplingTime = dt,
-            sampleLength = dt * steps ,
+            samplingTime = net_params.get_param('Simulation.dt'),
+            sampleLength = net_params.get_param('Simulation.dt') 
+                           * net_params.get_param('Simulation.steps'),
             fixedLength  = True, 
-            binMode      = binning_mode
+            binMode      = net_params.get_param('Training.bin_mode')
         )
         testing_set = AnimalsDvsSliced(
-            dataPath     = data_path,
+            dataPath     = net_params.get_param('Path.data'),
             fileList     = test_set,
-            samplingTime = dt,
-            sampleLength = dt * steps ,
+            samplingTime = net_params.get_param('Simulation.dt'),
+            sampleLength = net_params.get_param('Simulation.dt') 
+                           * net_params.get_param('Simulation.steps'),
             fixedLength  = True, 
-            binMode      = binning_mode
+            binMode      = net_params.get_param('Training.bin_mode')
         )
         
         #definining train and test DataLoaders
@@ -96,25 +93,42 @@ if __name__ == '__main__':
         achieve training in batches is to crop all the samples to a fixed
         length size - STBP uses the first 1500 ms of all samples.
         """
-        train_loader = torch.utils.data.DataLoader(dataset=training_set, 
-                                                    batch_size=batch_size,
-                                                    shuffle=False, **kwargs)
-        test_loader = torch.utils.data.DataLoader(dataset=testing_set, 
-                                                  batch_size=test_batch_size,
-                                                  shuffle=False, **kwargs)
+        train_loader = torch.utils.data.DataLoader(
+            dataset=training_set, 
+            batch_size=net_params.get_param('Training.batch'),
+            shuffle=False, **kwargs)
+        test_loader = torch.utils.data.DataLoader(
+            dataset=testing_set, 
+            batch_size=net_params.get_param('Training.tst_batch'),
+            shuffle=False, **kwargs)
+        
         #Defining the model
         model = SLANIMALSNet().to(device)
         # model = SLANIMALSNet2().to(device)  #under development
         
         #Defining the optimizer
-        optimizer = optim.Adam(model.parameters(), lr=lr)
+        if net_params.get_param('Training.optimizer') == 'ADAM':
+            optimizer = optim.Adam(model.parameters(), 
+                                   lr=net_params.get_param('Training.lr'))
+        elif net_params.get_param('Training.optimizer') == 'SGD':
+            optimizer = optim.SGD(model.parameters(), 
+                                  lr=net_params.get_param('Training.lr'),
+                                  momentum=net_params.get_param('Training.momentum'))
+        else:
+            print("Optimizer option is not valid; using ADAM instead.")
+            optimizer = optim.Adam(model.parameters(), 
+                                   lr=net_params.get_param('Training.lr'))
         
         #Training and testing along the epochs
         print("FOLD {}:".format(fold))
         print("-----------------------------------------------")
         min_loss, max_acc = train_net(
-            model, optimizer, device, train_loader, test_loader, epochs, 
-            steps, writer, fold, model_path, load_model
+            model, optimizer, device, train_loader, test_loader, 
+            net_params.get_param('Training.epochs'), 
+            net_params.get_param('Simulation.steps'), 
+            writer, fold, 
+            net_params.get_param('Path.weights'), 
+            net_params.get_param('Training.load_model'), 
             )
         
         #save this fold's losses and accuracies in history

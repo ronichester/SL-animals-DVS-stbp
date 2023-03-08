@@ -1,5 +1,9 @@
 import torch
 import torch.nn as nn
+from stbp_tools import Params
+
+#load main parameters
+net_params = Params('network.yaml')
 
 # #arguments for the STBP paper: MNIST and N-MNIST datasets
 # args = {
@@ -12,16 +16,12 @@ import torch.nn as nn
 
 #arguments for the SL-Animals paper: SL-Animals-DVS dataset
 args = {
-    'steps': 50,  #time steps / frames (simulation window 1500ms)
-    'dt': 30,     #in ms
-    'an': 0.5,    #stbp paper: "Derivative approximation parameter" = 1.0
-    'Vth': 0.3,   # V_threshold: 0.5 MNIST, 0.2 NMNIST
-    'tau': 0.3    # Leakage constant tau "Decay Factor": 0.1 MNIST, 0.2 NMNIST
+    'steps': net_params.get_param('Simulation.steps'), 
+    'dt':    net_params.get_param('Simulation.dt'),
+    'an':    net_params.get_param('Simulation.a1'),
+    'Vth':   net_params.get_param('Simulation.Vth'),
+    'tau':   net_params.get_param('Simulation.tau'),
 }
-
-
-def get_args():
-    return args
 
 # approximate firing function
 class SpikeAct(torch. autograd. Function):

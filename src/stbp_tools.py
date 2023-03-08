@@ -12,6 +12,7 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 import tonic.transforms as transforms
+from envyaml import EnvYAML
 from sklearn.model_selection import KFold
 
 
@@ -207,12 +208,12 @@ def train_net(model, optimizer, device, train_loader, val_loader, epochs,
         #updating max accuracy
         if val_acc > max_acc:
             max_acc = val_acc
-        print('    (Min. Val. Loss: {:.4f}  |  Max. Val. Accuracy: {:.2f}%)\n'.format(min_loss, max_acc))
+        print('(Min. Val. Loss: {:.2f}%  |  Max. Val. Accuracy: {:.2f}%)\n'.format(min_loss, max_acc))
 
         #saving best weights for inference (at minimum loss)
         if val_loss < min_loss:
             min_loss = val_loss
-            print('Lower minimum loss found!')
+            print('\nLower minimum loss found!')
             print("Saving the model's best weights...\n")
             os.makedirs(save_path, exist_ok=True)
             torch.save(model.state_dict(), 
@@ -278,3 +279,19 @@ def stbp_init(weight_matrix):
     torch.nn.init.uniform_(weight_matrix, -1.0, 1.0)
     denominator = (weight_matrix**2).sum(dim=1).sqrt().unsqueeze(1)
     return weight_matrix / denominator
+
+
+class Params(object):
+    """
+    An object created to get configuration parameters stored in a 'yaml' file.
+    """
+    def __init__(self, yaml_file):
+        """ Save the parameter file (*.yaml) to a variable. """
+        self.params = EnvYAML(os.path.join(os.path.dirname(__file__), yaml_file))
+    
+    def get_param(self, param_name):    
+        """ Get the requested parameter. """
+        if param_name in self.params:
+            return self.params[param_name]
+        else:
+            return None
