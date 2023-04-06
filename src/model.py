@@ -1,12 +1,12 @@
 import torch
 import torch.nn as nn
-from stbp_tools import stbp_init, Params
+from stbp_tools import stbp_init, get_params
 from layers import tdLayer, LIFSpike
 
 
 #load main parameters
-net_params = Params('network.yaml')
-steps = net_params.get_param('Simulation.steps')
+net_params = get_params('network.yaml')
+steps = net_params['Simulation']['steps']
 
 class NMNISTNetMLP(nn.Module):  # N-MNIST MLP network on STBP paper
     def __init__(self):

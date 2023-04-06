@@ -6,6 +6,7 @@ Created on Tue Nov 29 17:39:43 2022
 """
 #import libraries
 import os
+import yaml
 import torch
 import numpy as np
 import torch.nn.functional as F
@@ -13,6 +14,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as anim
 import tonic.transforms as transforms
 from envyaml import EnvYAML
+from collections import defaultdict
 from sklearn.model_selection import KFold
 
 
@@ -281,17 +283,26 @@ def stbp_init(weight_matrix):
     return weight_matrix / denominator
 
 
-class Params(object):
+def get_params(yaml_file):
     """
-    An object created to get configuration parameters stored in a 'yaml' file.
+    Get configuration parameters stored in a 'yaml' file.
     """
-    def __init__(self, yaml_file):
-        """ Save the parameter file (*.yaml) to a variable. """
-        self.params = EnvYAML(os.path.join(os.path.dirname(__file__), yaml_file))
-    
-    def get_param(self, param_name):    
-        """ Get the requested parameter. """
-        if param_name in self.params:
-            return self.params[param_name]
-        else:
-            return None
+    with open(yaml_file, 'r') as f: 
+        params = yaml.safe_load(f) 
+        return defaultdict(lambda: None, params)
+
+
+def get_optimizer(net, params):
+    """ Returns an optimizer given a network and parameters """
+    if params['Training']['optimizer'] == 'ADAM':
+        optimizer = torch.optim.Adam(net.parameters(), 
+                                     lr=params['Training']['lr'])
+    elif params['Training']['optimizer'] == 'SGD':
+        optimizer = torch.optim.SGD(net.parameters(), 
+                                    lr=params['Training']['lr'],
+                                    momentum=params['Training']['momentum'])
+    else:
+        print("Optimizer option is not valid; using ADAM instead.")
+        optimizer = torch.optim.Adam(net.parameters(), 
+                                     lr=params['Training']['lr'])
+    return optimizer

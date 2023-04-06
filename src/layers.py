@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
-from stbp_tools import Params
+from stbp_tools import get_params
 
 #load main parameters
-net_params = Params('network.yaml')
+net_params = get_params('network.yaml')
 
 # #arguments for the STBP paper: MNIST and N-MNIST datasets
 # args = {
@@ -16,11 +16,11 @@ net_params = Params('network.yaml')
 
 #arguments for the SL-Animals paper: SL-Animals-DVS dataset
 args = {
-    'steps': net_params.get_param('Simulation.steps'), 
-    'dt':    net_params.get_param('Simulation.dt'),
-    'an':    net_params.get_param('Simulation.a1'),
-    'Vth':   net_params.get_param('Simulation.Vth'),
-    'tau':   net_params.get_param('Simulation.tau'),
+    'steps': net_params['Simulation']['steps'], 
+    'dt':    net_params['Simulation']['dt'],
+    'an':    net_params['Simulation']['a1'],
+    'Vth':   net_params['Simulation']['Vth'],
+    'tau':   net_params['Simulation']['tau'],
 }
 
 # approximate firing function
