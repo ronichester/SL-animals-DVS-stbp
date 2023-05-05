@@ -10,7 +10,16 @@ The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by diffe
 
 <p align="center"> </p>  
 
-The reported results in the SL-animals paper were a test accuracy of 56.2% +- 1.52% in the whole dataset and 71.45% +- 1.74% on the reduced dataset (excluding group S3). The results achieved with the implementation published here, using train/test sets only: **Test Accuracy (whole dataset): 41.32% +- 3.06%**.  
+The reported results in the SL-animals paper were divided in two: results with the full dataset and results with a reduced dataset, meaning excluding group S3. The results achieved with the implementation published here fall short of the published results, considering the published results have no code available to reproduce them.  
+  
+**The implementation published in this repository is the first publicly available STBP implementation on the SL-animals dataset** (and the only one as of may 2023, as far as I know). The results are summarized below:
+
+|       | Full Dataset | Reduced Dataset |
+|:-:|:-:|:-:|
+| Reported Results    | 56.2 +- 1.52%  | 71.45 +- 1.74% |
+| This Implementation | 41.32 +- 3.06% | not ready yet  |
+
+           
            
 ## Requirements:
 While not sure if the list below contains the actual minimums, it will run for sure if you do have the following:
