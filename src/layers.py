@@ -1,6 +1,11 @@
+import os
 import torch
 import torch.nn as nn
 from stbp_tools import get_params
+
+#assert we are on the right working directory (good for running on containers)
+PATH = os.path.dirname(os.path.realpath(__file__))
+os.chdir(PATH)
 
 #load main parameters
 net_params = get_params('network.yaml')
