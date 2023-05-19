@@ -102,18 +102,17 @@ class AnimalsDvsSliced(Dataset):
     dataset to slice and save the files in the correct path.
     """
     
-    def __init__(self, dataPath, fileList, samplingTime, sampleLength,
+    def __init__(self, dataPath, fileList, samplingTime, timeSteps,
                  randomCrop, binMode):
         
         self.slicedDataPath = dataPath + 'sliced_recordings/'   #string
         self.files = list_sliced_files(np.loadtxt(fileList, dtype='str')) #list [1121 files]
-        self.samplingTime = samplingTime                   #30 [ms]
-        self.sampleLength = sampleLength                   #1500 [ms]
-        self.nTimeBins = int(sampleLength / samplingTime)  #50 bins
-        self.randomCrop = randomCrop                       #boolean
-        self.binMode = binMode                             #string
+        self.samplingTime = samplingTime              #dt = 30 [ms]
+        self.nTimeBins = timeSteps                    #num. of time bins
+        self.randomCrop = randomCrop                  #boolean
+        self.binMode = binMode                        #string
         #read class file
-        self.classes = pd.read_csv(                        #DataFrame
+        self.classes = pd.read_csv(                   #DataFrame
             dataPath + 'SL-Animals-DVS_gestures_definitions.csv')
     
     def __len__(self):
@@ -125,8 +124,8 @@ class AnimalsDvsSliced(Dataset):
         events, class_name, class_index, ss = self.get_sample(index)
         
         #prepare the target vector (one hot encoding)
-        target = torch.zeros(19)            #initialize target vector
-        target[class_index] = 1             #set target vector
+        target = torch.zeros(19)                       #init. target vector
+        target[class_index] = 1                        #set target vector
         
         #process the events
         """
@@ -138,7 +137,7 @@ class AnimalsDvsSliced(Dataset):
             transforms.TimeAlignment(),                #1st event at t=0
             transforms.ToFrame(                        #events -> frames
                 sensor_size = (ss[0], ss[1], 2),
-                time_window=self.samplingTime,  #in ms
+                time_window=self.samplingTime,         #in ms
                 ),
             ])
         
@@ -158,8 +157,8 @@ class AnimalsDvsSliced(Dataset):
             - mean sample: 4360 +- 1189 ms stdev.
         """
         if self.randomCrop:  #choose a random crop
-            actual_bins = frames.shape[0]      #actual sample length
-            bin_diff = actual_bins - self.nTimeBins  #difference
+            actual_bins = frames.shape[0]              #actual sample length
+            bin_diff = actual_bins - self.nTimeBins    #difference
             min_timebin = 0 if bin_diff <= 0 else np.random.randint(0, bin_diff)
             max_timebin = min_timebin + self.nTimeBins
             frames = frames[min_timebin:max_timebin, ...]
@@ -173,8 +172,8 @@ class AnimalsDvsSliced(Dataset):
             frames = np.concatenate([frames, padding], axis=0)
             
         #input spikes need to be float Tensors shaped CHWT for STBP
-        frames = frames.transpose(1,3,2,0)   #TCWH -> CHWT
-        input_spikes = torch.Tensor(frames)  #torch.float32
+        frames = frames.transpose(1,3,2,0)             #TCWH -> CHWT
+        input_spikes = torch.Tensor(frames)            #torch.float32
 
         #choice of binning mode
         """
@@ -193,18 +192,18 @@ class AnimalsDvsSliced(Dataset):
         if self.binMode == 'OR' :
             #set all pixels with spikes to the value '1.0'
             input_spikes = torch.where(
-                (input_spikes > 0),                 #if spike:
-                1.0,                                #set pixel value to 1
-                input_spikes)                       #else keep value 0
+                (input_spikes > 0),                    #if spike:
+                1.0,                                   #set pixel value to 1
+                input_spikes)                          #else keep value 0
         elif self.binMode == 'SUM' :
             #pixels display the number of spikes (integer) on each time bin
             pass  #do nothing, TonicFrames works natively in 'SUM' mode
         elif self.binMode == 'SUM_NORM' :
             #set all pixels with spikes to a normalized SUM value
             input_spikes = torch.where(
-                (input_spikes > 0),                 #if spike:
-                input_spikes / input_spikes.max(),  #set pixel to range [0, 1.0]
-                input_spikes)                       #else keep value 0
+                (input_spikes > 0),                    #if spike:
+                input_spikes / input_spikes.max(),     #set pixel to [0, 1.0]
+                input_spikes)                          #else keep value 0
         else:
             print("Invalid binning mode; results are compromised!")
             print("(binning_mode should be only 'OR', 'SUM' or 'SUM_NORM')")
@@ -222,7 +221,7 @@ class AnimalsDvsSliced(Dataset):
         events = np.load(self.slicedDataPath + input_name)
         
         #find sample class
-        class_index = index % 19                           #[0-18]
+        class_index = index % 19                       #[0-18]
         class_name =  self.classes.iloc[class_index, 1]
         
         sensor_shape = (128, 128)

@@ -87,8 +87,7 @@ if __name__ == '__main__':
             dataPath     = net_params['Path']['data'],
             fileList     = train_set,
             samplingTime = net_params['Simulation']['dt'],
-            sampleLength = net_params['Simulation']['dt'] 
-                           * net_params['Simulation']['steps'],
+            timeSteps    = net_params['Simulation']['steps'], 
             randomCrop   = net_params['Training']['random_crop'],
             binMode      = net_params['Training']['bin_mode']
         )
@@ -96,8 +95,7 @@ if __name__ == '__main__':
             dataPath     = net_params['Path']['data'],
             fileList     = val_set,
             samplingTime = net_params['Simulation']['dt'],
-            sampleLength = net_params['Simulation']['dt']
-                           * net_params['Simulation']['steps'],
+            timeSteps    = net_params['Simulation']['steps'], 
             randomCrop   = net_params['Training']['random_crop'],
             binMode      = net_params['Training']['bin_mode']
         )
@@ -105,8 +103,7 @@ if __name__ == '__main__':
             dataPath     = net_params['Path']['data'],
             fileList     = test_set,
             samplingTime = net_params['Simulation']['dt'],
-            sampleLength = net_params['Simulation']['dt'] 
-                           * net_params['Simulation']['steps'],
+            timeSteps    = net_params['Simulation']['steps'], 
             randomCrop   = net_params['Training']['random_crop'],
             binMode      = net_params['Training']['bin_mode']
         )
