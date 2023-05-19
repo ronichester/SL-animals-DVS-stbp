@@ -51,11 +51,12 @@ if __name__ == '__main__':
     
     #print header
     print('WELCOME TO STBP TRAINING!')
-    print("Training params: batch size={}, epochs={}, initial LR={}, binning mode={}"
+    print("Training params: batch size={}, epochs={}, initial LR={}, binning mode={}, random crop={}"
           .format(net_params['Training']['batch'], 
                   net_params['Training']['epochs'], 
                   net_params['Training']['lr'], 
-                  net_params['Training']['bin_mode']))
+                  net_params['Training']['bin_mode'],
+                  net_params['Training']['random_crop']))
     print("Simulation params: steps={}, dt={}, Vth={}, Tau={}, a1={}".format(
           net_params['Simulation']['steps'],
           net_params['Simulation']['dt'], 
@@ -79,6 +80,7 @@ if __name__ == '__main__':
             samplingTime = net_params['Simulation']['dt'],
             sampleLength = net_params['Simulation']['dt'] 
                            * net_params['Simulation']['steps'],
+            randomCrop   = net_params['Training']['random_crop'],
             binMode      = net_params['Training']['bin_mode']
         )
         testing_set = AnimalsDvsSliced(
@@ -87,6 +89,7 @@ if __name__ == '__main__':
             samplingTime = net_params['Simulation']['dt'],
             sampleLength = net_params['Simulation']['dt'] 
                            * net_params['Simulation']['steps'],
+            randomCrop   = net_params['Training']['random_crop'],
             binMode      = net_params['Training']['bin_mode']
         )
         

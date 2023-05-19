@@ -2,25 +2,26 @@
 # @author: Schechter
 
 Simulation:
-    steps:      50     #time steps / frames (simulation window 1500ms)
-    dt:         30     #simulation step size (ms) 
-    a1:         0.5    #stbp paper: "Derivative approximation parameter" = 1.0
-    Vth:        0.3    #V_threshold: 0.5 MNIST, 0.2 NMNIST
-    tau:        0.3    #Leakage constant tau "Decay Factor": 0.1 MNIST, 0.2 NMNIST
-Training:
-    cuda:       True   #enables CUDA training (default: True)
-    seed:       0      #control the randomness reproducibility
-    batch:      8      #train batch size
-    tst_batch:  32     #test batch size
-    epochs:     200    #fixed number of training epochs
-    optimizer:  ADAM   #SGD
-    lr:         0.001  #initial learning rate (must use float here)
-    momentum:   0.9    #SGD momentum (default: 0.5)
-    load_model: False  #For Loading pre-trained weights on Model
-    bin_mode:   OR     #SUM #SUM_NORM (how spikes are binned into frames)
-Path:
-    data:       ../data/              ## /home/data/
-    file_list:  ../data/filelist.txt  #filelist_excludingS3.txt  ## /home/data/filelist.txt
-    weights:    weights/              #to save the the model weights
-    logs:       logs/                 #to save the tensorboard logs
-    out:        output/               #to save the output figures
+    steps:        50     #time steps / frames (simulation window 1500ms)
+    dt:           30     #simulation step size (ms) 
+    a1:           0.5    #stbp paper: "Derivative approximation parameter" = 1.0
+    Vth:          0.3    #V_threshold: 0.5 MNIST, 0.2 NMNIST
+    tau:          0.3    #Leakage constant tau "Decay Factor": 0.1 MNIST, 0.2 NMNIST
+Training:  
+    cuda:         True   #enables CUDA training (default: True)
+    seed:         0      #control the randomness reproducibility
+    batch:        8      #train batch size
+    tst_batch:    32     #test batch size
+    epochs:       200    #fixed number of training epochs
+    optimizer:    ADAM   #SGD
+    lr:           0.001  #initial learning rate (must use float here)
+    momentum:     0.9    #SGD momentum (default: 0.5)
+    load_model:   False  #For Loading pre-trained weights on Model
+    bin_mode:     OR     #SUM #SUM_NORM (how spikes are binned into frames)
+    random_crop:  False  #True (default: False, meaning crops start from t=0)
+Path: 
+    data:         ../data/              ## /home/data/
+    file_list:    ../data/filelist.txt  #filelist_excludingS3.txt  ## /home/data/filelist.txt
+    weights:      weights/              #to save the the model weights
+    logs:         logs/                 #to save the tensorboard logs
+    out:          output/               #to save the output figures
