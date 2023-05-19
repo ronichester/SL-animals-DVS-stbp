@@ -10,7 +10,7 @@ The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by diffe
 
 <p align="center"> </p>  
 
-The reported results in the SL-animals paper were divided in two: results with the full dataset and results with a reduced dataset, meaning excluding group S3. **The results achieved with the implementation in this repository are better than the published results in the full dataset (about 9% improvement) and almost equal in the reduced dataset**. Considering the published results have no code available to reproduce them, it's quite an achievement. 
+The reported results in the SL-animals paper were divided in two: results with the full dataset and results with a reduced dataset, meaning excluding group S3. **The results achieved with the implementation in this repository exceed the published results in the full dataset  by about 9% and are equivalent in the reduced dataset**. Considering the published results have no code available to reproduce them, it's quite an achievement. 
   
 **The implementation published in this repository is the first publicly available STBP implementation on the SL-animals dataset** (and the only one as of may 2023, as far as I know). The results are summarized below:
 
@@ -48,7 +48,7 @@ A script was created to slice the SL animals DVS recordings into actual samples 
 
 The core of the STBP method implementation is in *layers.py*: the base code code is from [thiswinex/STBP-simple](https://github-com.translate.goog/thiswinex/STBP-simple?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp), to which I added a few fixes, changes and adaptations, inspired also by this other [STBP implementation](https://github.com/yjwu17/STBP-for-training-SpikingNN#spatio-temporal-bp-for-spiking-neural-networks).
 
-The Spiking Neural Network model is in *model.py* (SLANIMALSNet), and reproduces the architecture described in the SL-animals paper. The main training tools and functions used in the package are in *stbp_tools.py*. The customizable network and simulation parameters are in *network.yaml*; this is the place to edit parameters like 'batch size', 'data path', 'seed' and many others. 
+The Spiking Neural Network model is in *model.py* (SLANIMALSNet), and reproduces the architecture described in the SL-animals paper. The main training tools and functions used in the package are in *stbp_tools.py*. The customizable network and simulation parameters are in *network.yaml*; this is the place to edit parameters like 'batch size', 'data path', 'seed' and many others. A new feature was introduced as an option, allowing the use of random sample crops for training instead of the fixed crops starting at the beggining of the sample, as in the original paper implementation. This allows further exploration of the available data in the dataset.
 
 The main program is in *sl_animals_slayer.py*, which uses the correct experimental procedure for training a network using cross validation after dividing the dataset into train, validation and test sets. A simpler version of the main program is in *train_test_only.py*, which is basically the same except dividing the dataset only into train and test sets, in an effort to replicate the published results. Apparently, the benchmark results were reported in this simpler dataset split configuration, which is not optimal.
 
