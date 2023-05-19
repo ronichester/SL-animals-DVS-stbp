@@ -17,7 +17,7 @@ The reported results in the SL-animals paper were divided in two: results with t
 |       | Full Dataset | Reduced Dataset |
 |:-:|:-:|:-:|
 | Reported Results    | 56.2 +- 1.52%  | 71.45 +- 1.74% |
-| This Implementation | 41.32 +- 3.06% | not ready yet  |
+| This Implementation | 42.43 +- 1.41% | 47.67 +- 5.13% |
 
            
            
