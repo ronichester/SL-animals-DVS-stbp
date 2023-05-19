@@ -9,7 +9,7 @@ Simulation:
     tau:        0.3    #Leakage constant tau "Decay Factor": 0.1 MNIST, 0.2 NMNIST
 Training:
     cuda:       True   #enables CUDA training (default: True)
-    seed:       1      #control the randomness reproducibility
+    seed:       0      #control the randomness reproducibility
     batch:      8      #train batch size
     tst_batch:  32     #test batch size
     epochs:     200    #fixed number of training epochs
@@ -17,7 +17,7 @@ Training:
     lr:         0.001  #initial learning rate (must use float here)
     momentum:   0.9    #SGD momentum (default: 0.5)
     load_model: False  #For Loading pre-trained weights on Model
-    bin_mode:   OR     #SUM (the way the spikes are binned into frames)
+    bin_mode:   OR     #SUM #SUM_NORM (how spikes are binned into frames)
 Path:
     data:       ../data/              ## /home/data/
     file_list:  ../data/filelist.txt  #filelist_excludingS3.txt  ## /home/data/filelist.txt

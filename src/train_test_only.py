@@ -79,7 +79,6 @@ if __name__ == '__main__':
             samplingTime = net_params['Simulation']['dt'],
             sampleLength = net_params['Simulation']['dt'] 
                            * net_params['Simulation']['steps'],
-            fixedLength  = True, 
             binMode      = net_params['Training']['bin_mode']
         )
         testing_set = AnimalsDvsSliced(
@@ -88,7 +87,6 @@ if __name__ == '__main__':
             samplingTime = net_params['Simulation']['dt'],
             sampleLength = net_params['Simulation']['dt'] 
                            * net_params['Simulation']['steps'],
-            fixedLength  = True, 
             binMode      = net_params['Training']['bin_mode']
         )
         

@@ -88,7 +88,6 @@ if __name__ == '__main__':
             samplingTime = net_params['Simulation']['dt'],
             sampleLength = net_params['Simulation']['dt'] 
                            * net_params['Simulation']['steps'],
-            fixedLength  = True, 
             binMode      = net_params['Training']['bin_mode']
         )
         validation_set = AnimalsDvsSliced(
@@ -97,7 +96,6 @@ if __name__ == '__main__':
             samplingTime = net_params['Simulation']['dt'],
             sampleLength = net_params['Simulation']['dt']
                            * net_params['Simulation']['steps'],
-            fixedLength  = True, 
             binMode      = net_params['Training']['bin_mode']
         )
         testing_set = AnimalsDvsSliced(
@@ -106,7 +104,6 @@ if __name__ == '__main__':
             samplingTime = net_params['Simulation']['dt'],
             sampleLength = net_params['Simulation']['dt'] 
                            * net_params['Simulation']['steps'],
-            fixedLength  = True, 
             binMode      = net_params['Training']['bin_mode']
         )
         
@@ -153,8 +150,10 @@ if __name__ == '__main__':
         #test the network
         print("TESTING FOLD {}:".format(fold))
         print("-----------------------------------------------")
-        test_loss, test_acc = test_net(model, device, test_loader, writer, fold, 
-                                       net_params['Path']['weights'])
+        test_loss, test_acc = test_net(
+            model, device, test_loader, writer, fold, 
+            net_params['Path']['weights']
+            )
         
         #save this fold's losses and accuracies in history
         val_losses.append(min_loss)
