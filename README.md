@@ -10,7 +10,7 @@ The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by diffe
 
 <p align="center"> </p>  
 
-The reported results in the SL-animals paper were divided in two: results with the full dataset and results with a reduced dataset, meaning excluding group S3. The results achieved with the implementation in this repository are better than the published results in the full dataset (about 9% improvement) and almost equal in the reduced dataset. Considering the published results have no code available to reproduce them, it's quite an achievement. 
+The reported results in the SL-animals paper were divided in two: results with the full dataset and results with a reduced dataset, meaning excluding group S3. **The results achieved with the implementation in this repository are better than the published results in the full dataset (about 9% improvement) and almost equal in the reduced dataset**. Considering the published results have no code available to reproduce them, it's quite an achievement. 
   
 **The implementation published in this repository is the first publicly available STBP implementation on the SL-animals dataset** (and the only one as of may 2023, as far as I know). The results are summarized below:
 
