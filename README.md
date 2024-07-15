@@ -1,5 +1,5 @@
-# SL-animals-DVS training with STBP
-This repository contains an STBP (Spatio-Temporal Back Propagation) implementation on the SL-Animals-DVS dataset using Pytorch.
+# SL-animals-DVS training with STBP (improved)
+This repository contains an STBP (Spatio-Temporal Back Propagation) implementation on the SL-Animals-DVS dataset using Pytorch. The first results reported in this repository were an initial atempt to reproduce the published results. Additionally, improvements were made to the original implementation, optimizing the input data and the spiking neural network in order to enhance the gesture recognition performance. Details of the techniques applied can be found in the following [conference paper](https://ieeexplore.ieee.org/document/10506133), published in LASCAS 2024.
 
 **A BRIEF INTRODUCTION:**  
 STBP is an offline training method that directly trains a Spiking Neural Network (SNN), expanding the use of the classic backpropagation algorithm to the time domain, so the training occurs in space AND time. Therefore, it is a suitable method to train SNNs, which are biologically plausible networks (in short).  
@@ -10,7 +10,7 @@ The SL-animals-DVS is a dataset of sign language (SL) gestures peformed by diffe
 
 <p align="center"> </p>  
 
-The reported results in the SL-animals paper were divided in two: results with the full dataset and results with a reduced dataset, meaning excluding group S3. **The results achieved with the implementation in this repository exceed the published results in the full dataset  by about 9% and are equivalent in the reduced dataset**. Considering the published results have no code available to reproduce them, it's quite an achievement. 
+The reported results in the SL-animals paper were divided in two: results with the full dataset and results with a reduced dataset, meaning excluding group S3. **The results achieved with the implementation in this repository exceed the published results in the full dataset  by about 9%** and are equivalent in the reduced dataset. Considering the published results have no code available to reproduce them, it's quite an achievement. 
   
 **The implementation published in this repository is the first publicly available STBP implementation on the SL-animals dataset** (and the only one as of may 2023, as far as I know). The results are summarized below:
 
@@ -18,6 +18,7 @@ The reported results in the SL-animals paper were divided in two: results with t
 |:-:|:-:|:-:|
 | Reported Results    | 56.20 +- 1.52% | 71.45 +- 1.74% |
 | This Implementation | 64.97 +- 4.81% | 71.47 +- 1.54% |
+| **Optimized Version**   | **75.78 +- 2.73%** |      N/A       |
 
            
            
@@ -48,7 +49,9 @@ A script was created to slice the SL animals DVS recordings into actual samples 
 
 The core of the STBP method implementation is in *layers.py*: the base code code is from [thiswinex/STBP-simple](https://github-com.translate.goog/thiswinex/STBP-simple?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en&_x_tr_pto=wapp), to which I added a few fixes, changes and adaptations, inspired also by this other [STBP implementation](https://github.com/yjwu17/STBP-for-training-SpikingNN#spatio-temporal-bp-for-spiking-neural-networks).
 
-The Spiking Neural Network model is in *model.py* (SLANIMALSNet), and reproduces the architecture described in the SL-animals paper. The main training tools and functions used in the package are in *stbp_tools.py*. The customizable network and simulation parameters are in *network.yaml*; this is the place to edit parameters like 'batch size', 'data path', 'seed' and many others. A new feature was introduced as an option, allowing the use of random sample crops for training instead of the fixed crops starting at the beggining of the sample, as in the original paper implementation. This allows further exploration of the available data in the dataset.
+The Spiking Neural Network model is in *model.py* (SLANIMALSNet), and reproduces the architecture described in the SL-animals paper. The main training tools and functions used in the package are in *stbp_tools.py*. The customizable network and simulation parameters are in *network.yaml*; this is the place to edit parameters like 'batch size', 'data path', 'seed' and many others. 
+
+A new feature was introduced as an option, allowing the use of random sample crops for training instead of the fixed crops starting at the beggining of the sample, as in the original paper implementation. This allows further exploration of the available data in the dataset, and that's how I got the best results in the table above. Check my [published paper](https://ieeexplore.ieee.org/document/10506133) for implementation details.
 
 The main program is in *sl_animals_slayer.py*, which uses the correct experimental procedure for training a network using cross validation after dividing the dataset into train, validation and test sets. A simpler version of the main program is in *train_test_only.py*, which is basically the same except dividing the dataset only into train and test sets, in an effort to replicate the published results. Apparently, the benchmark results were reported in this simpler dataset split configuration.
 
@@ -81,6 +84,7 @@ tensorboard --logdir=logs
   
 
 ## References 
+- C. R. Schechter and J. G. R. C. Gomes, ["Enhancing Gesture Recognition Performance Using Optimized Event-Based Data Sample Lengths and Crops"](https://doi.org/10.1109/LASCAS60203.2024.10506133), 2024 IEEE 15th Latin America Symposium on Circuits and Systems (LASCAS), Punta del Este, Uruguay, pp. 1-5, (2024).
 - Vasudevan, A., Negri, P., Di Ielsi, C. et al. ["SL-Animals-DVS: event-driven sign language animals dataset"](https://doi.org/10.1007/s10044-021-01011-w) . *Pattern Analysis and Applications 25, 505–520 (2021)*. 
 - Yujie Wu, Lei Deng, Guoqi Li, Jun Zhu and Luping Shi: ["Spatio-Temporal Backprogation for Training High-performance Spiking Neural Networks"](https://www.frontiersin.org/articles/10.3389/fnins.2018.00331/full) *Frontiers in Neuroscience 12:331 (2018)* 
 - The original dataset can be downloaded [here](http://www2.imse-cnm.csic.es/neuromorphs/index.php/SL-ANIMALS-DVS-Database)
