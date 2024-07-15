@@ -21,7 +21,7 @@ net_params = get_params('network.yaml')
 
 #arguments for the SL-Animals paper: SL-Animals-DVS dataset
 args = {
-    'steps': net_params['Simulation']['steps'], 
+    'steps': net_params['Simulation']['steps'],  #only used in class BroadCast
     'dt':    net_params['Simulation']['dt'],
     'an':    net_params['Simulation']['a1'],
     'Vth':   net_params['Simulation']['Vth'],
@@ -175,6 +175,7 @@ class Transpose(nn.Module):
 
 
 class BroadCast(nn.Module):
+    #ONLY HERE THAT WOULD BE TROUBLE WHEN USING RANDOM CROPS -> steps
     """Broadcasts legacy data as spatio-temporal domain data.
         Broadcast spatial tensor to spatial-temporal tensor.
     """

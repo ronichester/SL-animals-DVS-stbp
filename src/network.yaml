@@ -2,7 +2,8 @@
 # @author: Schechter
 
 Simulation:
-    steps:        50     #time steps / frames (simulation window 1500ms)
+    steps:        50     #time steps or frames (simulation window 1500ms = steps*dt)
+                         #(for random crops use 17 steps for training crops, 510ms = steps*dt)
     dt:           30     #simulation step size (ms) 
     a1:           0.5    #stbp paper: "Derivative approximation parameter" = 1.0
     Vth:          0.3    #V_threshold: 0.5 MNIST, 0.2 NMNIST
@@ -12,7 +13,7 @@ Training:
     seed:         0      #control the randomness reproducibility
     batch:        8      #train batch size
     tst_batch:    32     #test batch size
-    epochs:       200    #fixed number of training epochs
+    epochs:       400    #fixed number of training epochs
     optimizer:    ADAM   #SGD
     lr:           0.001  #initial learning rate (must use float here)
     momentum:     0.9    #SGD momentum (default: 0.5)
@@ -25,3 +26,9 @@ Path:
     weights:      weights/              #to save the the model weights
     logs:         logs/                 #to save the tensorboard logs
     out:          output/               #to save the output figures
+
+
+#this part below is valid only for random_crop training, otherwise ignored
+Testing:
+    steps:        145    #time steps or frames (test window 4350ms = steps*dt)
+                         #PS: testing steps MUST BE >= simulation steps

@@ -145,7 +145,7 @@ def adjust_learning_rate(optimizer, epoch, lr_decay_epoch=25):
 
 #main training/evaluating function
 def train_net(model, optimizer, device, train_loader, val_loader, epochs, 
-              steps, writer, fold, save_path, pretrained, decay_lr=False):
+              writer, fold, save_path, pretrained, decay_lr=False):
     
     #load pre-trained weights
     if pretrained:
@@ -156,13 +156,14 @@ def train_net(model, optimizer, device, train_loader, val_loader, epochs,
             print('Model loaded.')
     
     #init best test results
-    min_loss = 1.0
+    min_loss = np.inf
     max_acc = 0.0
     
     #main loop
     for epoch in range(1, epochs + 1):
         #training 
         model.train()
+        train_loss = 0
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(device), target.to(device)
             output = model(data)
@@ -170,15 +171,19 @@ def train_net(model, optimizer, device, train_loader, val_loader, epochs,
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            #sum up batch loss
+            train_loss += loss.item()
             
-            #printing and logging training statistics (per batch)
+            #printing and logging training statistics
             if (batch_idx % 10 == 0) or (
                     (batch_idx+1) % len(train_loader) == 0):
                 print('Train Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                    epoch, batch_idx * len(data / steps), len(train_loader.dataset),
-                           100. * batch_idx / len(train_loader), loss.item()))
-                writer.add_scalar('Train Loss /batchidx', loss, 
-                                  batch_idx + len(train_loader) * epoch)
+                    epoch, batch_idx * data.shape[0], len(train_loader.dataset),
+                           100. * batch_idx / len(train_loader), 
+                           train_loss/len(train_loader.dataset)))
+        #avg train loss in epoch
+        train_loss /= len(train_loader.dataset)
+        writer.add_scalar('Train Loss /epoch', train_loss, epoch)
         
         #evaluating
         model.eval()
@@ -227,14 +232,6 @@ def train_net(model, optimizer, device, train_loader, val_loader, epochs,
         if decay_lr:
             optimizer = adjust_learning_rate(optimizer, epoch)
         #end of epoch
-    
-    #if model did not train for some reason, save the weights anyway for inference
-    if min_loss == 1.0: 
-        print("Unfortunately the model was not able to train on this fold with these settings.")
-        print("Saving the model's weights...\n")
-        os.makedirs(save_path, exist_ok=True)
-        torch.save(model.state_dict(), 
-                   save_path + "model_weights_fold{}.pt".format(fold))
 
     return min_loss, max_acc
 

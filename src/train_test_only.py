@@ -10,6 +10,7 @@ Assumes the original dataset is already sliced in 1121 samples.
 @author: Schechter
 """
 import os
+import gc
 import torch
 import random
 import numpy as np
@@ -51,18 +52,23 @@ if __name__ == '__main__':
     
     #print header
     print('WELCOME TO STBP TRAINING!')
-    print("Training params: batch size={}, epochs={}, initial LR={}, binning mode={}, random crop={}"
+    print("Training params: batch size={}, epochs={}, initial LR={}, binning mode={}"
           .format(net_params['Training']['batch'], 
                   net_params['Training']['epochs'], 
                   net_params['Training']['lr'], 
-                  net_params['Training']['bin_mode'],
-                  net_params['Training']['random_crop']))
+                  net_params['Training']['bin_mode']))
     print("Simulation params: steps={}, dt={}, Vth={}, Tau={}, a1={}".format(
           net_params['Simulation']['steps'],
           net_params['Simulation']['dt'], 
           net_params['Simulation']['Vth'], 
           net_params['Simulation']['tau'], 
           net_params['Simulation']['a1']))
+    if net_params['Training']['random_crop'] :
+        print('\nTraining with random crops... Testing steps = {}'.format(
+            net_params['Testing']['steps']))
+        print('    Training sample: {} ms  |  Testing sample: {} ms'.format(
+            net_params['Simulation']['steps'] * net_params['Simulation']['dt'],
+            net_params['Testing']['steps'] * net_params['Simulation']['dt']))
     print('\nStarting 4-fold cross validation (train/test only): Please wait...\n')
     global_st_time = datetime.now()       #monitor total training time 
     
@@ -86,8 +92,10 @@ if __name__ == '__main__':
             dataPath     = net_params['Path']['data'],
             fileList     = test_set,
             samplingTime = net_params['Simulation']['dt'],
-            timeSteps    = net_params['Simulation']['steps'], 
-            randomCrop   = net_params['Training']['random_crop'],
+            timeSteps    = net_params['Testing']['steps'] if 
+                           net_params['Training']['random_crop'] else 
+                           net_params['Simulation']['steps'], 
+            randomCrop   = False,  #always False for testing
             binMode      = net_params['Training']['bin_mode']
         )
         
@@ -110,18 +118,16 @@ if __name__ == '__main__':
         
         #Defining the model
         model = SLANIMALSNet().to(device)
-        # model = SLANIMALSNet2().to(device)  #under development
         
         #Defining the optimizer
         optimizer = get_optimizer(model, net_params)
-        
+
         #Training and testing along the epochs
         print("FOLD {}:".format(fold))
         print("-----------------------------------------------")
         min_loss, max_acc = train_net(
             model, optimizer, device, train_loader, test_loader, 
             net_params['Training']['epochs'], 
-            net_params['Simulation']['steps'], 
             writer, fold, 
             net_params['Path']['weights'], 
             net_params['Training']['load_model'], 
@@ -133,6 +139,11 @@ if __name__ == '__main__':
 
         writer.close()
         #end of fold
+        
+        #clear memory
+        gc.collect()
+        del model
+        torch.cuda.empty_cache()
     
     #end of cross-validation ---------------------------------------
     global_end_time = datetime.now()     #monitor total training time
